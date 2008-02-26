@@ -1,7 +1,7 @@
 <?php
 // CONFIGURATIONS BEGIN
 // default language
-define ('CUBE_UTILS_ML_DEFAULT_LANGUNAME','japanese');
+define ('CUBE_UTILS_ML_DEFAULT_LANGNAME','japanese');
 
 // list the language tags separated with comma
 define('CUBE_UTILS_ML_LANGS','ja,en'); // [en]english[/en]  [ja]japanese[/ja] common

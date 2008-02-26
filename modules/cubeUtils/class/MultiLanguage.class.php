@@ -41,9 +41,12 @@ class MultiLanguage extends XCube_ActionFilter
             $this->mLanguage = $_GET[CUBE_UTILS_ML_PARAM_NAME] ;
         } else if(!empty($_COOKIE[CUBE_UTILS_ML_PARAM_NAME]) && in_array($_COOKIE[CUBE_UTILS_ML_PARAM_NAME], $this->mLanguages)) {
             $this->mLanguage = $_COOKIE[CUBE_UTILS_ML_PARAM_NAME];
-        } else {
+        } else if ($browserAccept = $this->getLangBrowserAccept()){
             $this->mLanguage = $this->getLangBrowserAccept();
+        } else {
+            $this->mLanguage = $this->getLangByName(CUBE_UTILS_ML_DEFAULT_LANGNAME);
         }
+        
         if (!empty($this->mLanguage)) {
             $_COOKIE[CUBE_UTILS_ML_PARAM_NAME] = $this->mLanguage;
             setcookie(CUBE_UTILS_ML_PARAM_NAME, $this->mLanguage, time()+CUBE_UTILS_ML_COOKIELIFETIME, $this->mCookiePath, '', 0);
@@ -51,8 +54,10 @@ class MultiLanguage extends XCube_ActionFilter
             if ($languageName) {
                 $language = $languageName;
                 setcookie(CUBE_UTILS_ML_COOKIE_NAME, $language, time()+CUBE_UTILS_ML_COOKIELIFETIME, $this->mCookiePath, '', 0);
-            } 
-            ob_start(array(&$this, 'obFilter'));
+            }
+            if (empty($_GET[CUBE_UTILS_ML_PARAM_NAME]) || $_GET[CUBE_UTILS_ML_PARAM_NAME]!='raw') {
+                ob_start(array(&$this, 'obFilter'));
+            }
         }
         $GLOBALS['xoopsConfig']['language'] = $language;
     }
@@ -64,6 +69,18 @@ class MultiLanguage extends XCube_ActionFilter
         $availableLangs = XoopsLists::getLangList();
         If (($languageName != '') && (in_array($languageName, $availableLangs))) {
             return $languageName;
+        }
+        return false;
+    }
+    
+    function getLangByName($languageName = '')
+    {
+        include_once XOOPS_ROOT_PATH."/class/xoopslists.php";
+        $idx = array_search($languageName,  $this->mLanguageNames);
+        $language = $this->mLanguages[$idx];
+        $availableLangs = XoopsLists::getLangList();
+        If (($language != '') && (in_array($languageName, $availableLangs))) {
+            return $language;
         }
         return false;
     }
