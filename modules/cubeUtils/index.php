@@ -10,7 +10,7 @@ if($xoopsUser) {
 }
 
 
-if (isset($_COOKIE[$xoopsConfig['usercookie']])) {
+if (@isset($_COOKIE[$xoopsConfig['usercookie']])) { //ToDo: Must change to Usrmodule Config
     $xoopsTpl->assign('usercookie', $_COOKIE[$xoopsConfig['usercookie']]);
 }
 if (isset($_GET['xoops_redirect'])) {
