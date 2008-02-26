@@ -17,7 +17,11 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
     function preBlockFilter()
     {
         $root =& XCube_Root::getSingleton();
-        if ($this->_get_module_config('cubeUtils', 'cubeUtils_use_autologin')){
+
+        $config_handler =& xoops_gethandler('config');
+        $moduleConfigCubeUtils =& $config_handler->getConfigsByDirname('cubeUtils');
+
+        if ($moduleConfigCubeUtils['cubeUtils_use_autologin']){
             //Define custom delegate functions for AutoLogin.
             $root->mDelegateManager->add('Site.Login',              array(&$this, 'Login'), XCUBE_DELEGATE_PRIORITY_FINAL-1);
             $root->mDelegateManager->add('Site.CheckLogin.Success', array(&$this, 'CheckLoginSuccess'), XCUBE_DELEGATE_PRIORITY_NORMAL-1);
@@ -26,7 +30,7 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
 
             $this->mCookiePath = defined('XOOPS_COOKIE_PATH') ? XOOPS_COOKIE_PATH : preg_replace( '?http://[^/]+(/.*)$?' , '$1' , XOOPS_URL ) ;
             if( $this->mCookiePath == XOOPS_URL ) $this->mCookiePath = '/' ;
-            $this->mLifeTime = $this->_get_module_config('cubeUtils', 'cubeUtils_login_lifetime')*3600;
+            $this->mLifeTime = $moduleConfigCubeUtils['cubeUtils_login_lifetime'] * 3600;
 
             $GLOBALS['xoopsAutoLoginEnable'] = true;
         }
@@ -195,37 +199,6 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
                 exit();
             }
             break;
-        }
-    }
-    
-    /**
-     * Get Module Config value
-     *
-     * @access private
-     * 
-     * @param string $dirname
-     * @param string $conf_name
-     * @return string
-     * 
-     * @todo Following function should be public in anywhere else.
-     */
-    function _get_module_config($dirname,$conf_name) {
-        if (empty($GLOBALS['cubeUtils_config_cache'][$dirname])) {
-            $module_handler =& xoops_gethandler('module');
-            $module=$module_handler->getByDirname($dirname);
-            if ($module) {
-                $mid=$module->getVar('mid');
-                $config_handler =& xoops_gethandler('config');
-                $records =& $config_handler->getConfigList($mid);
-                $GLOBALS['cubeUtils_config_cache'][$dirname] = $records;
-            } else {
-                return false;
-            }
-        }
-        if (!empty($GLOBALS['cubeUtils_config_cache'][$dirname][$conf_name])) {
-            return $GLOBALS['cubeUtils_config_cache'][$dirname][$conf_name];
-        } else {
-            return false;
         }
     }
 }
