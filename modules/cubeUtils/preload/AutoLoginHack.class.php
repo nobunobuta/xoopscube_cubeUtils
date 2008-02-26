@@ -19,7 +19,7 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
         $root =& XCube_Root::getSingleton();
         if ($this->_get_module_config('cubeUtils', 'cubeUtils_use_autologin')){
             //Define custom delegate functions for AutoLogin.
-            $root->mDelegateManager->add('Site.Login',              array(&$this, 'Login'), XCUBE_DELEGATE_PRIORITY_FINAL);
+            $root->mDelegateManager->add('Site.Login',              array(&$this, 'Login'), XCUBE_DELEGATE_PRIORITY_FINAL-1);
             $root->mDelegateManager->add('Site.CheckLogin.Success', array(&$this, 'CheckLoginSuccess'), XCUBE_DELEGATE_PRIORITY_NORMAL-1);
             $root->mDelegateManager->add('Site.Logout',             array(&$this, 'Logout'), XCUBE_DELEGATE_PRIORITY_NORMAL-1);
             $root->mDelegateManager->add('Legacypage.User.Access',  array(&$this, 'AccessToUser'), XCUBE_DELEGATE_PRIORITY_NORMAL-1);
@@ -72,7 +72,7 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
                 if( empty( $users ) || count( $users ) != 1 ) {
                     $xoopsUser = false ;
                 } else {
-                    $xoopsUser =& $users[0];
+                    $xoopsUser = $users[0];
                     //Check Cookie LifeTime;
                     $old_limit = time() - $this->mLifeTime ;
                     list( $old_Ynj , $old_encpass ) = explode( ':' , $pass ) ;

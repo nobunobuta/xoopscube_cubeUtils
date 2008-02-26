@@ -68,5 +68,5 @@ $modversion['blocks'][2]['file'] = 'cubeUtils_langsel.php';
 $modversion['blocks'][2]['name'] = _MI_CUBE_UTILS_BNAME2;
 $modversion['blocks'][2]['description'] = 'Shows Select Language';
 $modversion['blocks'][2]['show_func'] = 'b_cubeUtils_langsel_show';
-$modversion['blocks'][1]['show_all_module'] = true;
+$modversion['blocks'][2]['show_all_module'] = true;
 ?>
