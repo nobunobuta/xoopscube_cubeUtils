@@ -5,7 +5,11 @@ if (file_exists(XOOPS_ROOT_PATH.'/modules/cubeUtils/include/conf_ml.php')) {
 } else {
     require_once XOOPS_ROOT_PATH.'/modules/cubeUtils/include/conf_ml.dist.php';
 }
-require_once XOOPS_ROOT_PATH . '/modules/base/kernel/Legacy_LanguageManager.class.php';
+if (file_exists(XOOPS_ROOT_PATH . '/modules/legacy/kernel/Legacy_LanguageManager.class.php')) {
+    require_once XOOPS_ROOT_PATH . '/modules/legacy/kernel/Legacy_LanguageManager.class.php';
+} else {
+    require_once XOOPS_ROOT_PATH . '/modules/base/kernel/Legacy_LanguageManager.class.php';
+}
 
 class MultiLanguage extends XCube_ActionFilter
 {
@@ -113,10 +117,10 @@ class MultiLanguage extends XCube_ActionFilter
     {
         global $sysutil_ml_lang;
 
-        $sysutil_ml_langs = explode( ',' , CUBE_UTILS_ML_LANGS ) ;
+        $this->mLanguages = explode( ',' , CUBE_UTILS_ML_LANGS ) ;
         // protection against some injection
-        if( ! in_array( $this->mlLang , $this->mlLangs ) ) {
-            $this->mlLang = $mlLangs[0] ;
+        if( ! in_array( $this->mLanguage , $this->mLanguages ) ) {
+            $this->mLanguage = $this->mLanguages[0] ;
         }
 
         // escape brackets inside of <input type="text" value="...">
@@ -128,7 +132,7 @@ class MultiLanguage extends XCube_ActionFilter
         // multilanguage image tag
         $langimages = explode( ',' , CUBE_UTILS_ML_LANGIMAGES ) ;
         $langnames = explode( ',' , CUBE_UTILS_ML_LANGNAMES ) ;
-        list($url, $query) = explode('?',$this->mRequestURI);
+        @list($url, $query) = explode('?',$this->mRequestURI);
         if( empty( $query ) ) {
             $link_base = '?'.CUBE_UTILS_ML_PARAM_NAME.'=' ;
         } else if( ( $pos = strpos($query, CUBE_UTILS_ML_PARAM_NAME.'=') ) === false ) {

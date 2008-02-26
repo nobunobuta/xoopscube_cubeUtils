@@ -22,6 +22,15 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
         $moduleConfigCubeUtils =& $config_handler->getConfigsByDirname('cubeUtils');
 
         if ($moduleConfigCubeUtils['cubeUtils_use_autologin']){
+        
+            if (class_exists('XCube_HttpContext')) {
+                $this->mController->mSetupUser->add(array(&$this, "setupAdminUser"), 0);
+                $this->mController->mSetupUser->add(array(&$this, "setupUser"), XCUBE_DELEGATE_PRIORITY_FINAL-1);
+            } else {
+                $root->mDelegateManager->add('Site.Login',              array(&$this, 'LoginAdmin'), 0);
+                $root->mDelegateManager->add('Site.Login',              array(&$this, 'Login'), XCUBE_DELEGATE_PRIORITY_FINAL-1);
+            }
+
             //Define custom delegate functions for AutoLogin.
             $root->mDelegateManager->add('Site.Login',              array(&$this, 'Login'), XCUBE_DELEGATE_PRIORITY_FINAL-1);
             $root->mDelegateManager->add('Site.CheckLogin.Success', array(&$this, 'CheckLoginSuccess'), XCUBE_DELEGATE_PRIORITY_NORMAL-1);
@@ -33,6 +42,73 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
             $this->mLifeTime = $moduleConfigCubeUtils['cubeUtils_login_lifetime'] * 3600;
 
             $GLOBALS['xoopsAutoLoginEnable'] = true;
+        }
+    }
+
+/**
+ * For Eclipse phpide debugging
+ */
+
+    function setupAdminUser(&$principal, &$controller, &$context) {
+        if (isset($_GET['debug_session_id'])&&isset($_GET['start_debug'])) {
+//            $_SESSION['xoopsUserId'] = 1;
+        }
+        return;
+    }
+
+    function LonginAdmin(&$xoopsUser)
+    {
+        if (isset($_GET['debug_session_id'])&&isset($_GET['start_debug'])) {
+//            $_SESSION['xoopsUserId'] = 1;
+        }
+        return;
+    }
+
+    /**
+     * For 2.1 Beta
+     */
+    function setupUser(&$principal, &$controller, &$context) {
+        if (is_object($context->mXoopsUser)) {
+            return;
+        }
+        //Anonymous session
+        if (empty($_SESSION['xoopsUserId'])) {
+            //Check Cookies for AutoLogin
+            $xoopsUser = $this->_getUserFromCookie();
+            if (is_object($xoopsUser) && $xoopsUser->getVar('level') > 0) {
+                $context->mXoopsUser =& $xoopsUser;
+                // Regist to session
+                $_SESSION['xoopsUserId'] = $xoopsUser->getVar('uid');
+                $_SESSION['xoopsUserGroups'] = $xoopsUser->getGroups();
+
+                $roles = array();
+                $roles[] = "Site.RegisteredUser";
+                if ($context->mXoopsUser->isAdmin(-1)) {
+                    $roles[] = "Site.Administrator";
+                }
+                if (in_array(XOOPS_GROUP_ADMIN, $_SESSION['xoopsUserGroups'])) {
+                    $roles[] = "Site.Owner";
+                }
+
+                $identity =& new Legacy_Identity($context->mXoopsUser);
+                $principal = new Legacy_GenericPrincipal($identity, $roles);
+        
+                //
+                // Use 'mysession'
+                //
+                $root =& XCube_Root::getSingleton();
+                $xoopsConfig = $root->mContext->mXoopsConfig;
+        
+                if ($xoopsConfig['use_mysession'] && $xoopsConfig['session_name'] != '') {
+                    setcookie($xoopsConfig['session_name'], session_id(), time() + (60 * $xoopsConfig['session_expire']), '/', '', 0);
+                }
+                // Raise Site.CheckLogin.Success event
+                XCube_DelegateUtils::call('Site.CheckLogin.Success', new XCube_Ref($xoopsUser));
+            } else { //Invalid AutoLogin
+                setcookie('autologin_uname', '', time() - 3600, $this->mCookiePath, '', 0);
+                setcookie('autologin_pass', '', time() - 3600, $this->mCookiePath, '', 0);
+                if (is_object($xoopsUser)) $xoopsUser = false;
+            }
         }
     }
 
@@ -51,54 +127,66 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
         if (empty($_SESSION['xoopsUserId'])) {
             $root =& XCube_Root::getSingleton();
             $controller = $root->mController;
+            $xoopsUser = $this->_getUserFromCookie();
+            if (is_object($xoopsUser) && $xoopsUser->getVar('level') > 0) {
+                $controller->mXoopsUser=&$xoopsUser;
+                // Regist to session
+                $_SESSION['xoopsUserId'] = $xoopsUser->getVar('uid');
+                $_SESSION['xoopsUserGroups'] = $xoopsUser->getGroups();
 
-            //Check Cookies for AutoLogin
-            if(isset($_COOKIE['autologin_uname']) && isset($_COOKIE['autologin_pass'])) {
-                //Forwarding to confirmation sequence, if request with POST or GET paramaters.
-                $confirm_url = '/user.php';
-                if(!empty( $_POST)) {
-                    $_SESSION['AUTOLOGIN_POST'] = $_POST ;
-                    $_SESSION['AUTOLOGIN_REQUEST_URI'] = $_SERVER['REQUEST_URI'] ;
-                    $controller->executeForward(XOOPS_URL.$confirm_url.'?op=confirm');
-                } else if(!empty($_SERVER['QUERY_STRING']) && substr($_SERVER['SCRIPT_NAME'], -strlen($confirm_url)) != $confirm_url) {
-                    $_SESSION['AUTOLOGIN_REQUEST_URI'] = $_SERVER['REQUEST_URI'] ;
-                    $controller->executeForward(XOOPS_URL.$confirm_url.'?op=confirm');
+                // Use 'mysession'
+                $xoopsConfig = $controller->mConfig;
+        
+                if ($xoopsConfig['use_mysession'] && $xoopsConfig['session_name'] != '') {
+                    setcookie($xoopsConfig['session_name'], session_id(), time() + (60 * $xoopsConfig['session_expire']), '/', '', 0);
                 }
-                //Verify UserID and Password in Cookie
-                $member_handler =& xoops_gethandler('member');
-                $myts =& MyTextSanitizer::getInstance();
-                $uname = $myts->stripSlashesGPC($_COOKIE['autologin_uname']);
-                $pass = $myts->stripSlashesGPC($_COOKIE['autologin_pass']);
+                // Raise Site.CheckLogin.Success event
+                XCube_DelegateUtils::call('Site.CheckLogin.Success', new XCube_Ref($xoopsUser));
+            } else { //Invalid AutoLogin
+                setcookie('autologin_uname', '', time() - 3600, $this->mCookiePath, '', 0);
+                setcookie('autologin_pass', '', time() - 3600, $this->mCookiePath, '', 0);
+                if (is_object($xoopsUser)) $xoopsUser = false;
+            }
+        }
+    }
 
-                $criteria = new CriteriaCompo(new Criteria('uname', addslashes($uname)));
-                $user_handler =& xoops_gethandler('user');
-                $users =& $user_handler->getObjects($criteria, false);
-                if( empty( $users ) || count( $users ) != 1 ) {
+    function &_getUserFromCookie() {
+        $root =& XCube_Root::getSingleton();
+        $controller = $root->mController;
+        //Check Cookies for AutoLogin
+        if(isset($_COOKIE['autologin_uname']) && isset($_COOKIE['autologin_pass'])) {
+            //Forwarding to confirmation sequence, if request with POST or GET paramaters.
+            $confirm_url = '/user.php';
+            if(!empty( $_POST)) {
+                $_SESSION['AUTOLOGIN_POST'] = $_POST ;
+                $_SESSION['AUTOLOGIN_REQUEST_URI'] = $_SERVER['REQUEST_URI'] ;
+                $controller->executeForward(XOOPS_URL.$confirm_url.'?op=confirm');
+            } else if(!empty($_SERVER['QUERY_STRING']) && substr($_SERVER['SCRIPT_NAME'], -strlen($confirm_url)) != $confirm_url) {
+                $_SESSION['AUTOLOGIN_REQUEST_URI'] = $_SERVER['REQUEST_URI'] ;
+                $controller->executeForward(XOOPS_URL.$confirm_url.'?op=confirm');
+            }
+            //Verify UserID and Password in Cookie
+            $member_handler =& xoops_gethandler('member');
+            $myts =& MyTextSanitizer::getInstance();
+            $uname = $myts->stripSlashesGPC($_COOKIE['autologin_uname']);
+            $pass = $myts->stripSlashesGPC($_COOKIE['autologin_pass']);
+
+            $criteria = new CriteriaCompo(new Criteria('uname', addslashes($uname)));
+            $user_handler =& xoops_gethandler('user');
+            $users =& $user_handler->getObjects($criteria, false);
+            if( empty( $users ) || count( $users ) != 1 ) {
+                $xoopsUser = null ;
+            } else {
+                $xoopsUser = $users[0];
+                //Check Cookie LifeTime;
+                $old_limit = time() - $this->mLifeTime ;
+                list( $old_Ynj , $old_encpass ) = explode( ':' , $pass ) ;
+                if( strtotime( $old_Ynj ) < $old_limit || md5( $xoopsUser->getVar('pass') . $old_Ynj ) != $old_encpass ) {
                     $xoopsUser = false ;
-                } else {
-                    $xoopsUser = $users[0];
-                    //Check Cookie LifeTime;
-                    $old_limit = time() - $this->mLifeTime ;
-                    list( $old_Ynj , $old_encpass ) = explode( ':' , $pass ) ;
-                    if( strtotime( $old_Ynj ) < $old_limit || md5( $xoopsUser->getVar('pass') . $old_Ynj ) != $old_encpass ) {
-                        $xoopsUser = false ;
-                    }
-                }
-                if (is_object($xoopsUser) && $xoopsUser->getVar('level') > 0) {
-                    $controller->mXoopsUser=&$xoopsUser;
-                    // Regist to session
-                    $_SESSION['xoopsUserId'] = $xoopsUser->getVar('uid');
-                    $_SESSION['xoopsUserGroups'] = $xoopsUser->getGroups();
-
-                    // Raise Site.CheckLogin.Success event
-                    XCube_DelegateUtils::call('Site.CheckLogin.Success', new XCube_Ref($xoopsUser));
-                } else { //Invalid AutoLogin
-                    setcookie('autologin_uname', '', time() - 3600, $this->mCookiePath, '', 0);
-                    setcookie('autologin_pass', '', time() - 3600, $this->mCookiePath, '', 0);
-                    if (is_object($xoopsUser)) $xoopsUser = false;
                 }
             }
         }
+        return $xoopsUser;
     }
 
     /**
@@ -141,8 +229,15 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
     {
         $op=isset($_REQUEST['op']) ? trim($_REQUEST['op']) : 'main';
         $root =& XCube_Root::getSingleton();
+
         $controller = $root->mController;
-        $xoopsUser=&$controller->getXoopsUser();
+
+        if (isset($root->mContext)) {
+            $xoopsUser =& $root->mContext->mXoopsUser;
+        } else {
+            $xoopsUser=&$controller->getXoopsUser();
+        }
+
         switch($op) {
           case 'main':
             if (empty($xoopsUser)) {
