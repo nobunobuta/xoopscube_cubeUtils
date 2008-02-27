@@ -1,30 +1,29 @@
 <?php
+/**
+ *
+ * @package CubeUtils
+ * @version $Id: xoops_version.php 1294 2008-01-31 05:32:20Z nobunobu $
+ * @copyright Copyright 2006-2008 NobuNobuXOOPS Project <http://sourceforge.net/projects/nobunobuxoops/>
+ * @author NobuNobu <nobunobu@nobunobu.com>
+ * @license http://www.gnu.org/licenses/gpl.txt GNU GENERAL PUBLIC LICENSE Version 2
+ *
+ */
+
 if(!defined('XOOPS_ROOT_PATH')) exit ;
 $mydirname = basename(dirname( __FILE__ )) ;
 
 $modversion['name'] = $mydirname;
-$modversion['version'] = '0.5';
+$modversion['version'] = '0.6';
 $modversion['description'] = 'XOOPS Cube 2.1 Utilities';
 $modversion['credits'] = 'NobuNobu';
 $modversion['author'] = 'http://www.nobunobu.com/';
-$modversion['help'] = '';
+$modversion['help'] = 'index.html';
 $modversion['license'] = 'GPL';
 $modversion['official'] = 0;
 $modversion['image'] = 'images/cubeUtils.png';
 $modversion['dirname'] = $mydirname;
 
 $modversion['cube_style'] = true;
-
-// Installer
-$modversion['installer']['image'] = "images/normal_ob_wrench1.jpg";
-$modversion['installer']['description'][] = _MI_CUBE_UTILS_DESC_INSTALLER1;
-$modversion['installer']['description'][] = _MI_CUBE_UTILS_DESC_INSTALLER2;
-$modversion['installer']['description'][] = _MI_CUBE_UTILS_DESC_INSTALLER3;
-$modversion['installer']['description'][] = _MI_CUBE_UTILS_DESC_INSTALLER4;
-$modversion['installer']['licence']['title'] = _MI_CUBE_UTILS_LANG_GPL;
-$modversion['installer']['licence']['file'] = "licence.txt";
-
-//$modversion['onInstall'] = 'include/on_install.php';
 
 $modversion['hasMain'] = 1;
 $modversion['read_any'] = true;
