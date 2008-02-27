@@ -1,4 +1,19 @@
 <?php
+/**
+ *
+ * @package CubeUtils
+ * @version $Id: xoops_version.php 1294 2008-01-31 05:32:20Z nobunobu $
+ * @copyright Copyright 2006-2008 NobuNobuXOOPS Project <http://sourceforge.net/projects/nobunobuxoops/>
+ * @author NobuNobu <nobunobu@nobunobu.com>
+ * @license http://www.gnu.org/licenses/gpl.txt GNU GENERAL PUBLIC LICENSE Version 2
+ *
+ * Multi Language Enabler Action Filter
+ *
+ * Following Multi Language is based on "EMLH(The Easiest Multi-Language Hack) for XOOPS 2.0.x" by GIJOE
+ *   (http://www.peak.ne.jp/xoops/)
+ *
+ */
+
 if (!defined('XOOPS_ROOT_PATH')) exit();
 if (file_exists(XOOPS_ROOT_PATH.'/modules/cubeUtils/include/conf_ml.php')) {
     require_once XOOPS_ROOT_PATH.'/modules/cubeUtils/include/conf_ml.php';
@@ -198,16 +213,5 @@ class MultiLanguage extends XCube_ActionFilter
     {
         return preg_match( CUBE_UTILS_ML_NEVERCROSSREGEX , $matches[0] ) ? $matches[0] : '' ;
     }
-}
-
-class Legacy_LanguageManager_English extends Legacy_LanguageManager
-{
-    var $_mRequireOnceCache = array();
-    
-    function Legacy_LanguageManager_English()
-    {
-        define('_CHARSET', 'EUC-JP');
-    }
-    
 }
 ?>
