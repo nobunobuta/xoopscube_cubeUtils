@@ -1,4 +1,13 @@
 <?php
+/**
+ *
+ * @package CubeUtils
+ * @version $Id: xoops_version.php 1294 2008-01-31 05:32:20Z nobunobu $
+ * @copyright Copyright 2006-2008 NobuNobuXOOPS Project <http://sourceforge.net/projects/nobunobuxoops/>
+ * @author NobuNobu <nobunobu@nobunobu.com>
+ * @license http://www.gnu.org/licenses/gpl.txt GNU GENERAL PUBLIC LICENSE Version 2
+ *
+ */
 include_once(XOOPS_ROOT_PATH.'/class/xoopslists.php');
 if (file_exists(XOOPS_ROOT_PATH.'/modules/cubeUtils/include/conf_ml.php')) {
     require_once XOOPS_ROOT_PATH.'/modules/cubeUtils/include/conf_ml.php';
