@@ -1,13 +1,19 @@
 <?php
 /**
- * XOOPS Cube 2.1 Autologin Class (Module Preload Version)
  *
- * @author nobunobu
+ * @package CubeUtils
+ * @version $Id: xoops_version.php 1294 2008-01-31 05:32:20Z nobunobu $
+ * @copyright Copyright 2006-2008 NobuNobuXOOPS Project <http://sourceforge.net/projects/nobunobuxoops/>
+ * @author NobuNobu <nobunobu@nobunobu.com>
+ * @license http://www.gnu.org/licenses/gpl.txt GNU GENERAL PUBLIC LICENSE Version 2
+ *
+ * XOOPS Cube 2.1 Autologin Class (Module Preload Version)
  *
  * This is just a sample for evaluating XOOPS Cube 2.1 Delegate Mechanism.
  * Following Auto Login logic is based on "AutoLogin Hack for XOOPS 2.0.x" by GIJOE
  *   (http://www.peak.ne.jp/xoops/)
  */
+
 class CubeUtils_AutoLoginHack extends XCube_ActionFilter
 {
     var $mCookiePath;
@@ -23,16 +29,8 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
 
         if ($moduleConfigCubeUtils['cubeUtils_use_autologin']){
         
-            if (class_exists('XCube_HttpContext')) {
-                $this->mController->mSetupUser->add(array(&$this, "setupAdminUser"), 0);
-                $this->mController->mSetupUser->add(array(&$this, "setupUser"), XCUBE_DELEGATE_PRIORITY_FINAL-1);
-            } else {
-                $root->mDelegateManager->add('Site.Login',              array(&$this, 'LoginAdmin'), 0);
-                $root->mDelegateManager->add('Site.Login',              array(&$this, 'Login'), XCUBE_DELEGATE_PRIORITY_FINAL-1);
-            }
-
             //Define custom delegate functions for AutoLogin.
-            $root->mDelegateManager->add('Site.Login',              array(&$this, 'Login'), XCUBE_DELEGATE_PRIORITY_FINAL-1);
+            $root->mDelegateManager->add('Legacy_Controller.SetupUser', array(&$this, 'setupUser'), XCUBE_DELEGATE_PRIORITY_FINAL-1);
             $root->mDelegateManager->add('Site.CheckLogin.Success', array(&$this, 'CheckLoginSuccess'), XCUBE_DELEGATE_PRIORITY_NORMAL-1);
             $root->mDelegateManager->add('Site.Logout',             array(&$this, 'Logout'), XCUBE_DELEGATE_PRIORITY_NORMAL-1);
             $root->mDelegateManager->add('Legacypage.User.Access',  array(&$this, 'AccessToUser'), XCUBE_DELEGATE_PRIORITY_NORMAL-1);
@@ -45,27 +43,9 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
         }
     }
 
-/**
- * For Eclipse phpide debugging
- */
-
-    function setupAdminUser(&$principal, &$controller, &$context) {
-        if (isset($_GET['debug_session_id'])&&isset($_GET['start_debug'])) {
-//            $_SESSION['xoopsUserId'] = 1;
-        }
-        return;
-    }
-
-    function LonginAdmin(&$xoopsUser)
-    {
-        if (isset($_GET['debug_session_id'])&&isset($_GET['start_debug'])) {
-//            $_SESSION['xoopsUserId'] = 1;
-        }
-        return;
-    }
-
     /**
-     * For 2.1 Beta
+     * Custom 'mSetupUser' Delegate functions for AutoLogin
+     *
      */
     function setupUser(&$principal, &$controller, &$context) {
         if (is_object($context->mXoopsUser)) {
@@ -98,44 +78,6 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
                 //
                 $root =& XCube_Root::getSingleton();
                 $xoopsConfig = $root->mContext->mXoopsConfig;
-        
-                if ($xoopsConfig['use_mysession'] && $xoopsConfig['session_name'] != '') {
-                    setcookie($xoopsConfig['session_name'], session_id(), time() + (60 * $xoopsConfig['session_expire']), '/', '', 0);
-                }
-                // Raise Site.CheckLogin.Success event
-                XCube_DelegateUtils::call('Site.CheckLogin.Success', new XCube_Ref($xoopsUser));
-            } else { //Invalid AutoLogin
-                setcookie('autologin_uname', '', time() - 3600, $this->mCookiePath, '', 0);
-                setcookie('autologin_pass', '', time() - 3600, $this->mCookiePath, '', 0);
-                if (is_object($xoopsUser)) $xoopsUser = false;
-            }
-        }
-    }
-
-    /**
-     * Custom 'Site.Login' Delegate functions for AutoLogin
-     *
-     * @param XoopsUser $xoopsUser
-     */
-    function Login(&$xoopsUser)
-    {
-        //Check whether already be logged in by other delegate function
-        if(is_object($xoopsUser)) {
-            return;
-        }
-        //Anonymous session
-        if (empty($_SESSION['xoopsUserId'])) {
-            $root =& XCube_Root::getSingleton();
-            $controller = $root->mController;
-            $xoopsUser = $this->_getUserFromCookie();
-            if (is_object($xoopsUser) && $xoopsUser->getVar('level') > 0) {
-                $controller->mXoopsUser=&$xoopsUser;
-                // Regist to session
-                $_SESSION['xoopsUserId'] = $xoopsUser->getVar('uid');
-                $_SESSION['xoopsUserGroups'] = $xoopsUser->getGroups();
-
-                // Use 'mysession'
-                $xoopsConfig = $controller->mConfig;
         
                 if ($xoopsConfig['use_mysession'] && $xoopsConfig['session_name'] != '') {
                     setcookie($xoopsConfig['session_name'], session_id(), time() + (60 * $xoopsConfig['session_expire']), '/', '', 0);
@@ -232,11 +174,7 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
 
         $controller = $root->mController;
 
-        if (isset($root->mContext)) {
-            $xoopsUser =& $root->mContext->mXoopsUser;
-        } else {
-            $xoopsUser=&$controller->getXoopsUser();
-        }
+        $xoopsUser =& $root->mContext->mXoopsUser;
 
         switch($op) {
           case 'main':
