@@ -10,7 +10,6 @@ class MultiLanguagePreLoad extends XCube_ActionFilter
             $this->mController->mGetLanguageName->add(array(&$cubeUtilMlang, 'getLanguageName'),XCUBE_DELEGATE_PRIORITY_FINAL);
             // Following Global variable is prepared for calling direct filterling function
             $GLOBALS['cubeUtilMlang'] =& $cubeUtilMlang;
-            
         }
         $this->mController->mCreateLanguageManager->add(array(&$this, 'createLanguageManager'));
         // Followin line is a little bit tricky to include charset_mysql.php
