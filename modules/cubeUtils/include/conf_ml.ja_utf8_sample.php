@@ -29,5 +29,6 @@ define ('CUBE_UTILS_ML_COOKIE_NAME','ml_langname');
 
 // 'charset_mysql.php' in Legacy module language directory will be called.
 define ('CUBE_UTILS_ML_DBSETUP_LANGUAGE','ja_utf8');
+define ('CUBE_UTILS_ML_OUTPUT_MULTIBYTE',1);
 define ('CUBE_UTILS_ML_OUTPUT_CHARSET','UTF-8');
 ?>
