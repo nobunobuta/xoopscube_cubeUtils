@@ -6,18 +6,30 @@ class MultiLanguagePreLoad extends XCube_ActionFilter
     function preFilter()
     {
         if (file_exists(XOOPS_ROOT_PATH.'/modules/cubeUtils/class/MultiLanguage.class.php')) {
-            $cubeUtilMlang =& new MultiLanguage();
+            $cubeUtilMlang =& new CubeUtil_MultiLanguage();
             $this->mController->mGetLanguageName->add(array(&$cubeUtilMlang, 'getLanguageName'),XCUBE_DELEGATE_PRIORITY_FINAL);
+            // Following Global variable is prepared for calling direct filterling function
             $GLOBALS['cubeUtilMlang'] =& $cubeUtilMlang;
+            
         }
         $this->mController->mCreateLanguageManager->add(array(&$this, 'createLanguageManager'));
-        $this->mController->mSetupTextFilter->add(array(&$this, 'setupTextFilter'),XCUBE_DELEGATE_PRIORITY_FIRST); // This is a little bit tricky fool point
+        // Followin line is a little bit tricky to include charset_mysql.php
+        $this->mController->mSetupTextFilter->add(array(&$this, 'setupTextFilter'),XCUBE_DELEGATE_PRIORITY_FIRST);
+    }
+
+    function preBlockFilter()
+    {
+        $this->mController->mSetBlockCachePolicy->add(array(&$this, 'addLanguageAsIdentity'), XCUBE_DELEGATE_PRIORITY_FIRST + 20);
+        $this->mController->mSetModuleCachePolicy->add(array(&$this, 'addLanguageAsIdentity'), XCUBE_DELEGATE_PRIORITY_FIRST + 20);
     }
 
     function createLanguageManager(&$langManager, $languageName) 
     {
         if (defined('CUBE_UTILS_ML_OUTPUT_CHARSET')) {
             if (!defined('_CHARSET')) define('_CHARSET', CUBE_UTILS_ML_OUTPUT_CHARSET);
+        }
+        if (defined('CUBE_UTILS_ML_OUTPUT_MULTIBYTE')) {
+            if (!defined('XOOPS_USE_MULTIBYTES')) define('XOOPS_USE_MULTIBYTES', CUBE_UTILS_ML_OUTPUT_MULTIBYTE);
         }
     }
 
@@ -28,14 +40,6 @@ class MultiLanguagePreLoad extends XCube_ActionFilter
             if (file_exists($filename)) {
                 require_once($filename);
             }
-        }
-    }
-
-    function preBlockFilter()
-    {
-        if (method_exists($this->mController, 'getModuleCacheFilePath')) {
-            $this->mController->mSetBlockCachePolicy->add(array(&$this, 'addLanguageAsIdentity'), XCUBE_DELEGATE_PRIORITY_FIRST + 20);
-            $this->mController->mSetModuleCachePolicy->add(array(&$this, 'addLanguageAsIdentity'), XCUBE_DELEGATE_PRIORITY_FIRST + 20);
         }
     }
 
