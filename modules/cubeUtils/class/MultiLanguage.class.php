@@ -131,9 +131,6 @@ if (!class_exists('CubeUtil_MultiLanguage')) {
         // ob filter
         function obFilter( $s )
         {
-            global $sysutil_ml_lang;
-
-            $this->mLanguages = explode( ',' , CUBE_UTILS_ML_LANGS ) ;
             // protection against some injection
             if( ! in_array( $this->mLanguage , $this->mLanguages ) ) {
                 $this->mLanguage = $this->mLanguages[0] ;
