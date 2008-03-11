@@ -173,13 +173,33 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
         $root =& XCube_Root::getSingleton();
 
         $controller = $root->mController;
-
         $xoopsUser =& $root->mContext->mXoopsUser;
 
         switch($op) {
           case 'main':
             if (empty($xoopsUser)) {
-                $controller->executeForward(XOOPS_MODULE_URL.'/cubeUtils/index.php');
+                $controller->executeHeader();
+                // Using User Module Context (This part is a little bit tricky)
+                $controller->setupModuleContext('user'); 
+                // Using CubeUtil Module Context (This part is a little bit tricky)
+                $root->mLanguageManager->loadModuleMessageCatalog('cubeUtils');
+                $context =& $root->mContext;
+                $renderTarget =& $context->mModule->getRenderTarget();
+                $moduleConfig =  $context->mModuleConfig;
+                // Rendering Logon Screen With "Remember Me"
+                $renderTarget->setTemplateName('cubeUtils_userform.html');
+                if (@isset($_COOKIE[$moduleConfig['usercookie']])) {
+                    $renderTarget->setAttribute('usercookie', $_COOKIE[$moduleConfig['usercookie']]);
+                }
+                if (isset($_GET['xoops_redirect'])) {
+                    $renderTarget->setAttribute('xoops_redirect', htmlspecialchars(trim($_GET['xoops_redirect']), ENT_QUOTES));
+                }
+                $renderTarget->setAttribute('allow_register', $moduleConfig['allow_register']);
+                $controller->executeView();
+                exit(); //Should not return;
+            } else {
+                header('Location: '.XOOPS_MODULE_URL.'/user/index.php?action=UserInfo&uid='.$xoopsUser->getVar('uid'));
+                exit();
             }
             break;
             

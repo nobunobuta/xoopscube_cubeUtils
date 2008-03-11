@@ -13,8 +13,8 @@ if(!defined('XOOPS_ROOT_PATH')) exit ;
 $mydirname = basename(dirname( __FILE__ )) ;
 
 $modversion['name'] = $mydirname;
-$modversion['version'] = '0.6';
-$modversion['description'] = 'XOOPS Cube 2.1 Utilities';
+$modversion['version'] = '0.70';
+$modversion['description'] = 'XOOPS Cube 2.1.x Utilities';
 $modversion['credits'] = 'NobuNobu';
 $modversion['author'] = 'http://www.nobunobu.com/';
 $modversion['help'] = 'index.html';
@@ -25,7 +25,7 @@ $modversion['dirname'] = $mydirname;
 
 $modversion['cube_style'] = true;
 
-$modversion['hasMain'] = 1;
+$modversion['hasMain'] = 0;
 $modversion['read_any'] = true;
 
 // Templates
