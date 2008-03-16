@@ -172,7 +172,7 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
         $op=isset($_REQUEST['op']) ? trim($_REQUEST['op']) : 'main';
         $root =& XCube_Root::getSingleton();
 
-        $controller = $root->mController;
+        $controller =& $root->mController;
         $xoopsUser =& $root->mContext->mXoopsUser;
 
         switch($op) {
@@ -191,8 +191,8 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
                 if (@isset($_COOKIE[$moduleConfig['usercookie']])) {
                     $renderTarget->setAttribute('usercookie', $_COOKIE[$moduleConfig['usercookie']]);
                 }
-                if (isset($_GET['xoops_redirect'])) {
-                    $renderTarget->setAttribute('xoops_redirect', htmlspecialchars(trim($_GET['xoops_redirect']), ENT_QUOTES));
+                if (isset($_GET['xoops_redirect'])) {   
+                    $renderTarget->setAttribute('xoops_redirect', xoops_getrequest('xoops_redirect'));
                 }
                 $renderTarget->setAttribute('allow_register', $moduleConfig['allow_register']);
                 $controller->executeView();
