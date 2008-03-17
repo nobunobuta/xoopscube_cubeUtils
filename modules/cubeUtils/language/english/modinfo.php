@@ -1,6 +1,7 @@
 <?php
 define('_MI_CUBE_UTILS_BNAME1', 'Login');
 define('_MI_CUBE_UTILS_BNAME2', 'Select Language');
+define('_MI_CUBE_UTILS_BNAME3', 'Block for iGoogle Gadget');
 
 // Config titles
 define('_MI_CUBE_UTILS_CFG1_MSG','Use Auto Login');

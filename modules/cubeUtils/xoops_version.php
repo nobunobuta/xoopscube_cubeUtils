@@ -20,7 +20,17 @@ $modversion['author'] = 'http://www.nobunobu.com/';
 $modversion['help'] = 'index.html';
 $modversion['license'] = 'GPL';
 $modversion['official'] = 0;
-$modversion['image'] = 'images/cubeUtils.png';
+if (class_exists('XCube_Root')) {//ToDo: Detection of HD more elegant way
+  $root =& XCube_Root::getSingleton();
+  $controllerClass = strtolower(get_class($root->mController));
+  if ( $controllerClass === 'hdlegacy_controller' ) { 
+    $modversion['image'] = 'images/cubeUtilsHD.png';
+  } else {
+    $modversion['image'] = 'images/cubeUtils.png';
+  }
+} else {
+  $modversion['image'] = 'images/cubeUtils.png';
+}
 $modversion['dirname'] = $mydirname;
 
 $modversion['cube_style'] = true;
@@ -68,4 +78,11 @@ $modversion['blocks'][2]['name'] = _MI_CUBE_UTILS_BNAME2;
 $modversion['blocks'][2]['description'] = 'Shows Select Language';
 $modversion['blocks'][2]['show_func'] = 'b_cubeUtils_langsel_show';
 $modversion['blocks'][2]['show_all_module'] = true;
+// Blocks
+$modversion['blocks'][3]['file'] = 'cubeUtils_igoogle.php';
+$modversion['blocks'][3]['name'] = _MI_CUBE_UTILS_BNAME3;
+$modversion['blocks'][3]['description'] = 'iGoogle Block';
+$modversion['blocks'][3]['show_func'] = 'b_cubeUtils_igoogle_show';
+$modversion['blocks'][3]['edit_func'] = 'b_cubeUtils_igoogle_edit';
+$modversion['blocks'][3]['template'] = 'cubeUtils_block_igoogle.html';
 ?>
