@@ -39,7 +39,6 @@ class AutoLoginHack extends XCube_ActionFilter
     /**
      * Custom 'Site.Login' Delegate functions for AutoLogin
      *
-     * @param XoopsUser $xoopsUser
      */
     function setupUser(&$principal, &$controller, &$context) {
         if (is_object($context->mXoopsUser)) {
@@ -50,10 +49,14 @@ class AutoLoginHack extends XCube_ActionFilter
             //Check Cookies for AutoLogin
             $xoopsUser = $this->_getUserFromCookie();
             if (is_object($xoopsUser) && $xoopsUser->getVar('level') > 0) {
+                $root =& XCube_Root::getSingleton();
                 $context->mXoopsUser =& $xoopsUser;
                 // Regist to session
+        		$root->mSession->regenerate();
                 $_SESSION['xoopsUserId'] = $xoopsUser->getVar('uid');
                 $_SESSION['xoopsUserGroups'] = $xoopsUser->getGroups();
+
+                $context->mXoopsUser->setGroups($_SESSION['xoopsUserGroups']);
 
                 $roles = array();
                 $roles[] = "Site.RegisteredUser";
@@ -70,7 +73,6 @@ class AutoLoginHack extends XCube_ActionFilter
                 //
                 // Use 'mysession'
                 //
-                $root =& XCube_Root::getSingleton();
                 $xoopsConfig = $root->mContext->mXoopsConfig;
         
                 if ($xoopsConfig['use_mysession'] && $xoopsConfig['session_name'] != '') {
@@ -166,8 +168,7 @@ class AutoLoginHack extends XCube_ActionFilter
         $op=isset($_REQUEST['op']) ? trim($_REQUEST['op']) : 'main';
         $root =& XCube_Root::getSingleton();
 
-        $controller = $root->mController;
-
+        $controller =& $root->mController;
         $xoopsUser =& $root->mContext->mXoopsUser;
 
         switch($op) {

@@ -56,10 +56,14 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
             //Check Cookies for AutoLogin
             $xoopsUser = $this->_getUserFromCookie();
             if (is_object($xoopsUser) && $xoopsUser->getVar('level') > 0) {
+                $root =& XCube_Root::getSingleton();
                 $context->mXoopsUser =& $xoopsUser;
                 // Regist to session
+                $root->mSession->regenerate();
                 $_SESSION['xoopsUserId'] = $xoopsUser->getVar('uid');
                 $_SESSION['xoopsUserGroups'] = $xoopsUser->getGroups();
+
+                $context->mXoopsUser->setGroups($_SESSION['xoopsUserGroups']);
 
                 $roles = array();
                 $roles[] = "Site.RegisteredUser";
@@ -76,7 +80,6 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
                 //
                 // Use 'mysession'
                 //
-                $root =& XCube_Root::getSingleton();
                 $xoopsConfig = $root->mContext->mXoopsConfig;
         
                 if ($xoopsConfig['use_mysession'] && $xoopsConfig['session_name'] != '') {
@@ -198,7 +201,7 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
                 $controller->executeView();
                 exit(); //Should not return;
             } else {
-                header('Location: '.XOOPS_MODULE_URL.'/user/index.php?action=UserInfo&uid='.$xoopsUser->getVar('uid'));
+                header('Location: '.XOOPS_URL . '/userinfo.php?uid='.$xoopsUser->getVar('uid'));
                 exit();
             }
             break;
