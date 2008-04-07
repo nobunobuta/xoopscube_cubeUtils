@@ -234,7 +234,7 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
                 }
                 echo '
                 <html><head><meta http-equiv="Content-Type" content="text/html; charset='._CHARSET.'" />
-                <title>'.$controller->mConfig['sitename'].'</title>
+                <title>'.$root->mContext->mXoopsConfig['sitename'].'</title>
                 </head>
                 <body>
                 <div style="text-align:center; background-color: #EBEBEB; border-top: 1px solid #FFFFFF; border-left: 1px solid #FFFFFF; border-right: 1px solid #AAAAAA; border-bottom: 1px solid #AAAAAA; font-weight : bold;">
