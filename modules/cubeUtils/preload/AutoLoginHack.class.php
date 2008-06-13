@@ -37,6 +37,8 @@ class CubeUtils_AutoLoginHack extends XCube_ActionFilter
 
             $this->mCookiePath = defined('XOOPS_COOKIE_PATH') ? XOOPS_COOKIE_PATH : preg_replace( '?http://[^/]+(/.*)$?' , '$1' , XOOPS_URL ) ;
             if( $this->mCookiePath == XOOPS_URL ) $this->mCookiePath = '/' ;
+            if( substr( $this->mCookiePath , -1 ) != '/' ) $this->mCookiePath .= '/' ;
+
             $this->mLifeTime = $moduleConfigCubeUtils['cubeUtils_login_lifetime'] * 3600;
 
             $GLOBALS['xoopsAutoLoginEnable'] = true;

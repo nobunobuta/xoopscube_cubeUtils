@@ -39,13 +39,14 @@ if (!class_exists('CubeUtil_MultiLanguage')) {
         {
             $this->mCookiePath = defined('XOOPS_COOKIE_PATH') ? XOOPS_COOKIE_PATH : preg_replace( '?http://[^/]+(/.*)$?' , '$1' , XOOPS_URL ) ;
             if( $this->mCookiePath == XOOPS_URL ) $this->mCookiePath = '/' ;
+            if( substr( $this->mCookiePath , -1 ) != '/' ) $this->mCookiePath .= '/' ;
 
             $this->mLanguages = explode( ',' , CUBE_UTILS_ML_LANGS ) ;
             $this->mLanguageNames = explode(',', CUBE_UTILS_ML_LANGNAMES);
             if (!empty($_GET[CUBE_UTILS_ML_PARAM_NAME])) {
                 $_SERVER['QUERY_STRING'] = preg_replace('/(^|&)'.CUBE_UTILS_ML_PARAM_NAME.'\=(.*?)(&|$)/','',$_SERVER['QUERY_STRING']);
                 $_SERVER['QUERY_STRING'] = preg_replace('/[&\s]*$/','', $_SERVER['QUERY_STRING']);
-                $_SERVER['argv'][0] = preg_replace('/(^|&)'.CUBE_UTILS_ML_PARAM_NAME.'\=.*$/','',$_SERVER['argv'][0]);
+                $_SERVER['argv'][0] = preg_replace('/(^|&)'.CUBE_UTILS_ML_PARAM_NAME.'\=.*$/','',@$_SERVER['argv'][0]);
                 $_SERVER['REQUEST_URI'] = preg_replace('/(^|\?|&)'.CUBE_UTILS_ML_PARAM_NAME.'\=.*$/','',$_SERVER['REQUEST_URI']);
             }
 
