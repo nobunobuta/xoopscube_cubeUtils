@@ -13,7 +13,7 @@ if(!defined('XOOPS_ROOT_PATH')) exit ;
 $mydirname = basename(dirname( __FILE__ )) ;
 
 $modversion['name'] = $mydirname;
-$modversion['version'] = '0.70';
+$modversion['version'] = '0.80';
 $modversion['description'] = 'XOOPS Cube 2.1.x Utilities';
 $modversion['credits'] = 'NobuNobu';
 $modversion['author'] = 'http://www.nobunobu.com/';
@@ -23,7 +23,7 @@ $modversion['official'] = 0;
 if (class_exists('XCube_Root')) {//ToDo: Detection of HD more elegant way
   $root =& XCube_Root::getSingleton();
   $controllerClass = strtolower(get_class($root->mController));
-  if ( $controllerClass === 'hdlegacy_controller' ) { 
+  if ( $controllerClass === 'hdlegacy_controller' ) {
     $modversion['image'] = 'images/cubeUtilsHD.png';
   } else {
     $modversion['image'] = 'images/cubeUtils.png';
@@ -85,4 +85,12 @@ $modversion['blocks'][3]['description'] = 'iGoogle Block';
 $modversion['blocks'][3]['show_func'] = 'b_cubeUtils_igoogle_show';
 $modversion['blocks'][3]['edit_func'] = 'b_cubeUtils_igoogle_edit';
 $modversion['blocks'][3]['template'] = 'cubeUtils_block_igoogle.html';
+// Blocks
+$modversion['blocks'][4]['file'] = 'cubeUtils_whatsnew.php';
+$modversion['blocks'][4]['name'] = _MI_CUBE_UTILS_BNAME4;
+$modversion['blocks'][4]['description'] = 'Whats New Block';
+$modversion['blocks'][4]['show_func'] = 'b_cubeUtils_whatsnew_show';
+$modversion['blocks'][4]['edit_func'] = 'b_cubeUtils_whatsnew_edit';
+$modversion['blocks'][4]['options'] = '5';
+$modversion['blocks'][4]['template'] = 'cubeUtils_block_whatsnew.html';
 ?>

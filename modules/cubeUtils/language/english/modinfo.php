@@ -2,6 +2,7 @@
 define('_MI_CUBE_UTILS_BNAME1', 'Login');
 define('_MI_CUBE_UTILS_BNAME2', 'Select Language');
 define('_MI_CUBE_UTILS_BNAME3', 'Block for iGoogle Gadget');
+define('_MI_CUBE_UTILS_BNAME4', 'What\'s new');
 
 // Config titles
 define('_MI_CUBE_UTILS_CFG1_MSG','Use Auto Login');
