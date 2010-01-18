@@ -18,6 +18,8 @@ if (!defined('XOOPS_ROOT_PATH')) exit();
 if (!class_exists('CubeUtil_MultiLanguage')) {
     if (file_exists(XOOPS_ROOT_PATH.'/modules/cubeUtils/include/conf_ml.php')) {
         require_once XOOPS_ROOT_PATH.'/modules/cubeUtils/include/conf_ml.php';
+    } else if (file_exists(XOOPS_ROOT_PATH.'/settings/cubeUtil_conf.php')) {
+        require_once XOOPS_ROOT_PATH.'/settings/cubeUtil_conf.php';
     } else {
         require_once XOOPS_ROOT_PATH.'/modules/cubeUtils/include/conf_ml.dist.php';
     }
